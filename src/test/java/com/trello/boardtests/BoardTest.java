@@ -19,7 +19,7 @@ public class BoardTest extends BaseTest {
                 .spec(reqSpec)
                 .queryParam("name", "Board z Javy")
                 .when()
-                .post(BASE_URL + BOARDS)
+                .post(BOARDS)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
@@ -33,7 +33,7 @@ public class BoardTest extends BaseTest {
         given()
                 .spec(reqSpec)
                 .when()
-                .delete(BASE_URL + BOARDS + boardId)
+                .delete(BOARDS + boardId)
                 .then()
                 .statusCode(HttpStatus.SC_OK);
     }
@@ -44,7 +44,7 @@ public class BoardTest extends BaseTest {
                 .spec(reqSpec)
                 .queryParam("name", "")
                 .when()
-                .post(BASE_URL + BOARDS)
+                .post(BOARDS)
                 .then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST);
     }
@@ -56,7 +56,7 @@ public class BoardTest extends BaseTest {
                 .queryParam("name", "Board bez defaultów")
                 .queryParam("defaultLists", false)
                 .when()
-                .post(BASE_URL + BOARDS)
+                .post(BOARDS)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
@@ -70,7 +70,7 @@ public class BoardTest extends BaseTest {
         Response responseGet = given()
                 .spec(reqSpec)
                 .when()
-                .get(BASE_URL + BOARDS + boardId + "/" + LISTS)
+                .get(BOARDS + boardId + "/" + LISTS)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
@@ -83,7 +83,7 @@ public class BoardTest extends BaseTest {
         given()
                 .spec(reqSpec)
                 .when()
-                .delete(BASE_URL + BOARDS + boardId)
+                .delete(BOARDS + boardId)
                 .then()
                 .statusCode(HttpStatus.SC_OK);
     }
@@ -95,7 +95,7 @@ public class BoardTest extends BaseTest {
                 .queryParam("name", "Board z defaultami")
                 .queryParam("defaultLists", true)
                 .when()
-                .post(BASE_URL + BOARDS)
+                .post(BOARDS)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
@@ -109,7 +109,7 @@ public class BoardTest extends BaseTest {
         Response responseGet = given()
                 .spec(reqSpec)
                 .when()
-                .get(BASE_URL + BOARDS + boardId + "/" + LISTS)
+                .get(BOARDS + boardId + "/" + LISTS)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
@@ -122,7 +122,7 @@ public class BoardTest extends BaseTest {
         given()
                 .spec(reqSpec)
                 .when()
-                .delete(BASE_URL + BOARDS + boardId)
+                .delete(BOARDS + boardId)
                 .then()
                 .statusCode(HttpStatus.SC_OK);
 

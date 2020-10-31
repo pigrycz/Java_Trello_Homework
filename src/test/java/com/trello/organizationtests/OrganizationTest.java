@@ -19,6 +19,15 @@ public class OrganizationTest extends BaseTest {
     private static String organizationDesc;
     private static String organizationWebsite;
 
+    protected void deleteOrganization(String id){
+        given()
+                .spec(reqSpec)
+                .pathParam("id", id)
+                .when()
+                .delete(ORGANIZATIONS + "{id}")
+                .then()
+                .statusCode(HttpStatus.SC_OK);
+    }
 
     @BeforeEach
     public void beforeEach(){
@@ -31,7 +40,7 @@ public class OrganizationTest extends BaseTest {
                 .spec(reqSpec)
                 .queryParam("displayName", organizationDisplayName)
                 .when()
-                .post(BASE_URL + ORGANIZATIONS)
+                .post(ORGANIZATIONS)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
@@ -41,14 +50,7 @@ public class OrganizationTest extends BaseTest {
         assertThat(json.getString("displayName")).isEqualTo(organizationDisplayName);
 
         organizationId = json.get("id");
-
-        given()
-                .spec(reqSpec)
-                .pathParam("id", organizationId)
-                .when()
-                .delete(BASE_URL + ORGANIZATIONS + "{id}")
-                .then()
-                .statusCode(HttpStatus.SC_OK);
+        deleteOrganization(organizationId);
     }
 
     @Test
@@ -56,7 +58,7 @@ public class OrganizationTest extends BaseTest {
        given()
                 .spec(reqSpec)
                 .when()
-                .post(BASE_URL + ORGANIZATIONS)
+                .post(ORGANIZATIONS)
                 .then()
                 .statusCode(HttpStatus.SC_BAD_REQUEST);
     }
@@ -70,7 +72,7 @@ public class OrganizationTest extends BaseTest {
                 .queryParam("displayName", organizationDisplayName)
                 .queryParam("desc", organizationDesc)
                 .when()
-                .post(BASE_URL + ORGANIZATIONS)
+                .post(ORGANIZATIONS)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
@@ -81,14 +83,7 @@ public class OrganizationTest extends BaseTest {
         assertThat(json.getString("desc")).isEqualTo(organizationDesc);
 
         organizationId = json.get("id");
-
-        given()
-                .spec(reqSpec)
-                .pathParam("id", organizationId)
-                .when()
-                .delete(BASE_URL + ORGANIZATIONS + "{id}")
-                .then()
-                .statusCode(HttpStatus.SC_OK);
+        deleteOrganization(organizationId);
     }
 
     @Test
@@ -100,7 +95,7 @@ public class OrganizationTest extends BaseTest {
                 .queryParam("displayName", organizationDisplayName)
                 .queryParam("name", organizationName)
                 .when()
-                .post(BASE_URL + ORGANIZATIONS)
+                .post(ORGANIZATIONS)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
@@ -111,14 +106,7 @@ public class OrganizationTest extends BaseTest {
         assertThat(json.getString("name")).isEqualTo(organizationName);
 
         organizationId = json.get("id");
-
-        given()
-                .spec(reqSpec)
-                .pathParam("id", organizationId)
-                .when()
-                .delete(BASE_URL + ORGANIZATIONS + "{id}")
-                .then()
-                .statusCode(HttpStatus.SC_OK);
+        deleteOrganization(organizationId);
     }
 
     @Test
@@ -128,7 +116,7 @@ public class OrganizationTest extends BaseTest {
                 .queryParam("displayName", organizationDisplayName)
                 .queryParam("name", "")
                 .when()
-                .post(BASE_URL + ORGANIZATIONS)
+                .post(ORGANIZATIONS)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
@@ -140,13 +128,7 @@ public class OrganizationTest extends BaseTest {
 
         organizationId = json.get("id");
 
-        given()
-                .spec(reqSpec)
-                .pathParam("id", organizationId)
-                .when()
-                .delete(BASE_URL + ORGANIZATIONS + "{id}")
-                .then()
-                .statusCode(HttpStatus.SC_OK);
+        deleteOrganization(organizationId);
     }
 
     @Test
@@ -158,7 +140,7 @@ public class OrganizationTest extends BaseTest {
                 .queryParam("displayName", organizationDisplayName)
                 .queryParam("name", organizationName)
                 .when()
-                .post(BASE_URL + ORGANIZATIONS)
+                .post(ORGANIZATIONS)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
@@ -166,7 +148,7 @@ public class OrganizationTest extends BaseTest {
 
         JsonPath json = response.jsonPath();
         assertThat(json.getString("displayName")).isEqualTo(organizationDisplayName);
-        assertThat(json.getString("name")).isEqualTo(organizationName);
+        assertThat(json.getString("name")).startsWith(organizationName);
 
         organizationId = json.get("id");
 
@@ -175,7 +157,7 @@ public class OrganizationTest extends BaseTest {
                 .queryParam("displayName", organizationDisplayName)
                 .queryParam("name", organizationName)
                 .when()
-                .post(BASE_URL + ORGANIZATIONS)
+                .post(ORGANIZATIONS)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
@@ -187,21 +169,8 @@ public class OrganizationTest extends BaseTest {
 
         secondOrganizationId = json.get("id");
 
-        given()
-                .spec(reqSpec)
-                .pathParam("id", organizationId)
-                .when()
-                .delete(BASE_URL + ORGANIZATIONS + "{id}")
-                .then()
-                .statusCode(HttpStatus.SC_OK);
-
-        given()
-                .spec(reqSpec)
-                .pathParam("id", secondOrganizationId)
-                .when()
-                .delete(BASE_URL + ORGANIZATIONS + "{id}")
-                .then()
-                .statusCode(HttpStatus.SC_OK);
+        deleteOrganization(organizationId);
+        deleteOrganization(secondOrganizationId);
     }
 
     @Test
@@ -213,7 +182,7 @@ public class OrganizationTest extends BaseTest {
                 .queryParam("displayName", organizationDisplayName)
                 .queryParam("website", organizationWebsite)
                 .when()
-                .post(BASE_URL + ORGANIZATIONS)
+                .post(ORGANIZATIONS)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
@@ -224,14 +193,7 @@ public class OrganizationTest extends BaseTest {
         assertThat(json.getString("website")).isEqualTo(organizationWebsite);
 
         organizationId = json.get("id");
-
-        given()
-                .spec(reqSpec)
-                .pathParam("id", organizationId)
-                .when()
-                .delete(BASE_URL + ORGANIZATIONS + "{id}")
-                .then()
-                .statusCode(HttpStatus.SC_OK);
+        deleteOrganization(organizationId);
     }
 
     @Test
@@ -243,7 +205,7 @@ public class OrganizationTest extends BaseTest {
                 .queryParam("displayName", organizationDisplayName)
                 .queryParam("website", organizationWebsite)
                 .when()
-                .post(BASE_URL + ORGANIZATIONS)
+                .post(ORGANIZATIONS)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
@@ -254,14 +216,7 @@ public class OrganizationTest extends BaseTest {
         assertThat(json.getString("website")).isEqualTo(organizationWebsite);
 
         organizationId = json.get("id");
-
-        given()
-                .spec(reqSpec)
-                .pathParam("id", organizationId)
-                .when()
-                .delete(BASE_URL + ORGANIZATIONS + "{id}")
-                .then()
-                .statusCode(HttpStatus.SC_OK);
+        deleteOrganization(organizationId);
     }
 
     @Test
@@ -273,7 +228,7 @@ public class OrganizationTest extends BaseTest {
                 .queryParam("displayName", organizationDisplayName)
                 .queryParam("website", organizationWebsite)
                 .when()
-                .post(BASE_URL + ORGANIZATIONS)
+                .post(ORGANIZATIONS)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
@@ -284,14 +239,6 @@ public class OrganizationTest extends BaseTest {
         assertThat(json.getString("website")).startsWith("http://").endsWith(organizationWebsite);
 
         organizationId = json.get("id");
-
-        given()
-                .spec(reqSpec)
-                .pathParam("id", organizationId)
-                .when()
-                .delete(BASE_URL + ORGANIZATIONS + "{id}")
-                .then()
-                .statusCode(HttpStatus.SC_OK);
+        deleteOrganization(organizationId);
     }
-
 }

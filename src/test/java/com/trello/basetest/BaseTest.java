@@ -13,8 +13,8 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.junit.jupiter.api.BeforeAll;
 
 public class BaseTest {
-    protected static String KEY = "XXX";
-    protected static String TOKEN = "XXX";
+    protected static String KEY ;
+    protected static String TOKEN ;
 
     protected static final String BASE_URL = "https://api.trello.com/1/";
     protected static final String BOARDS = "boards/";
@@ -36,6 +36,7 @@ public class BaseTest {
         reqBuilder.addQueryParam("key", KEY);
         reqBuilder.addQueryParam("token", TOKEN);
         reqBuilder.setContentType(ContentType.JSON);
+        reqBuilder.setBaseUri(BASE_URL);
 
         reqSpec = reqBuilder.build();
 
