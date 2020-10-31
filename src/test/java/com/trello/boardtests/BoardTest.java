@@ -13,119 +13,71 @@ import static org.assertj.core.api.Assertions.*;
 
 public class BoardTest extends BaseTest {
 
-    @Test
-    public void createNewBoard() {
+    private Response getLists(String boardId){
         Response response = given()
                 .spec(reqSpec)
-                .queryParam("name", "Board z Javy")
                 .when()
-                .post(BOARDS)
+                .get(BOARDS + boardId + "/" + LISTS)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .response();
+
+        return response;
+    }
+
+    @Test
+    public void createNewBoard() {
+        Response response = createBoard("Board z Javy", null, 200);
 
         JsonPath json = response.jsonPath();
         assertThat(json.getString("name")).isEqualTo("Board z Javy");
 
         String boardId = json.get("id");
 
-        given()
-                .spec(reqSpec)
-                .when()
-                .delete(BOARDS + boardId)
-                .then()
-                .statusCode(HttpStatus.SC_OK);
+        deleteBoard(boardId);
     }
 
     @Test
     public void createBoardWithEmptyBoardName() {
-        given()
-                .spec(reqSpec)
-                .queryParam("name", "")
-                .when()
-                .post(BOARDS)
-                .then()
-                .statusCode(HttpStatus.SC_BAD_REQUEST);
+        createBoard("Board bez defaultów", null, 400);
     }
 
     @Test
     public void createBoardWithoutDeafultLists() {
-        Response response = given()
-                .spec(reqSpec)
-                .queryParam("name", "Board bez defaultów")
-                .queryParam("defaultLists", false)
-                .when()
-                .post(BOARDS)
-                .then()
-                .statusCode(HttpStatus.SC_OK)
-                .extract()
-                .response();
+        Response response = createBoard("Board bez defaultów", false, 200);
 
         JsonPath json = response.jsonPath();
         assertThat(json.getString("name")).isEqualTo("Board bez defaultów");
 
         String boardId = json.get("id");
 
-        Response responseGet = given()
-                .spec(reqSpec)
-                .when()
-                .get(BOARDS + boardId + "/" + LISTS)
-                .then()
-                .statusCode(HttpStatus.SC_OK)
-                .extract()
-                .response();
+        Response responseGet = getLists(boardId);
 
         JsonPath jsonGet = responseGet.jsonPath();
+
         List<String> idList = jsonGet.getList("id");
         assertThat(idList).hasSize(0);
 
-        given()
-                .spec(reqSpec)
-                .when()
-                .delete(BOARDS + boardId)
-                .then()
-                .statusCode(HttpStatus.SC_OK);
+        deleteBoard(boardId);
     }
 
     @Test
     public void createBoardWithDeafultLists() {
-        Response response = given()
-                .spec(reqSpec)
-                .queryParam("name", "Board z defaultami")
-                .queryParam("defaultLists", true)
-                .when()
-                .post(BOARDS)
-                .then()
-                .statusCode(HttpStatus.SC_OK)
-                .extract()
-                .response();
+        Response response = createBoard("Board z defaultami", true, 200);
 
         JsonPath json = response.jsonPath();
         assertThat(json.getString("name")).isEqualTo("Board z defaultami");
 
         String boardId = json.get("id");
 
-        Response responseGet = given()
-                .spec(reqSpec)
-                .when()
-                .get(BOARDS + boardId + "/" + LISTS)
-                .then()
-                .statusCode(HttpStatus.SC_OK)
-                .extract()
-                .response();
+        Response responseGet = getLists(boardId);
 
         JsonPath jsonGet = responseGet.jsonPath();
 
         List<String> namesList = jsonGet.getList("name");
+        assertThat(namesList).hasSize(3).containsExactly("To Do", "Doing", "Done");
 
-        given()
-                .spec(reqSpec)
-                .when()
-                .delete(BOARDS + boardId)
-                .then()
-                .statusCode(HttpStatus.SC_OK);
-
-        assertThat(namesList).hasSize(3).contains("To Do", "Doing", "Done");
+        deleteBoard(boardId);
     }
 }

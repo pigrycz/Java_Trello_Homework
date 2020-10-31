@@ -1,7 +1,6 @@
 package com.trello.boardlistcarde2e;
 
 import com.trello.basetest.BaseTest;
-import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
@@ -22,19 +21,28 @@ public class MoveCardBetweenLists extends BaseTest {
     private static String secondListId;
     private static String cardId;
 
-    @Test
-    @Order(1)
-    public void createNewBoard() {
-        Response response = given()
+    private String createList(String boardId, String listName){
+        Response responseList = given()
                 .spec(reqSpec)
-                .queryParam("name", boardName)
-                .queryParam("defaultLists", false)
+                .queryParam("idBoard", boardId)
+                .queryParam("name", listName)
                 .when()
-                .post(BOARDS)
+                .post(LISTS)
                 .then()
                 .statusCode(HttpStatus.SC_OK)
                 .extract()
                 .response();
+
+        JsonPath json = responseList.jsonPath();
+        assertThat(json.getString("name")).isEqualTo(listName);
+
+        return json.get("id");
+    }
+
+    @Test
+    @Order(1)
+    public void createNewBoard() {
+        Response response = createBoard(boardName, false, 200);
 
         JsonPath json = response.jsonPath();
         assertThat(json.getString("name")).isEqualTo(boardName);
@@ -45,41 +53,13 @@ public class MoveCardBetweenLists extends BaseTest {
     @Test
     @Order(2)
     public void createFirstList() {
-        Response responseList = given()
-                .spec(reqSpec)
-                .queryParam("idBoard", boardId)
-                .queryParam("name", firstListName)
-                .when()
-                .post(LISTS)
-                .then()
-                .statusCode(HttpStatus.SC_OK)
-                .extract()
-                .response();
-
-        JsonPath jsonFirstList = responseList.jsonPath();
-        assertThat(jsonFirstList.getString("name")).isEqualTo(firstListName);
-
-        firstListId = jsonFirstList.get("id");
+        firstListId = createList(boardId, firstListName);
     }
 
     @Test
     @Order(3)
     public void createSecondSecondList() {
-        Response responseList = given()
-                .spec(reqSpec)
-                .queryParam("idBoard", boardId)
-                .queryParam("name", secondListName)
-                .when()
-                .post(LISTS)
-                .then()
-                .statusCode(HttpStatus.SC_OK)
-                .extract()
-                .response();
-
-        JsonPath jsonSecondList = responseList.jsonPath();
-        assertThat(jsonSecondList.getString("name")).isEqualTo(secondListName);
-
-        secondListId = jsonSecondList.get("id");
+        secondListId = createList(boardId, secondListName);
     }
 
     @Test
@@ -126,12 +106,7 @@ public class MoveCardBetweenLists extends BaseTest {
 
     @Test
     @Order(6)
-    public void deleteBoard() {
-        given()
-                .spec(reqSpec)
-                .when()
-                .delete(BOARDS + boardId)
-                .then()
-                .statusCode(HttpStatus.SC_OK);
+    public void deleteCreatedBoard() {
+        deleteBoard(boardId);
     }
 }

@@ -19,6 +19,23 @@ public class OrganizationTest extends BaseTest {
     private static String organizationDesc;
     private static String organizationWebsite;
 
+    private Response organizationCreation(String displayName, String name, String desc, String website, Integer status) {
+        Response response = given()
+                .spec(reqSpec)
+                .queryParam("displayName", displayName)
+                .queryParam("name", name)
+                .queryParam("desc", desc)
+                .queryParam("website", website)
+                .when()
+                .post(ORGANIZATIONS)
+                .then()
+                .statusCode(status)
+                .extract()
+                .response();
+
+        return response;
+    }
+
     protected void deleteOrganization(String id){
         given()
                 .spec(reqSpec)
@@ -36,18 +53,12 @@ public class OrganizationTest extends BaseTest {
 
     @Test
     public void createNewOrganization() {
-        Response response = given()
-                .spec(reqSpec)
-                .queryParam("displayName", organizationDisplayName)
-                .when()
-                .post(ORGANIZATIONS)
-                .then()
-                .statusCode(HttpStatus.SC_OK)
-                .extract()
-                .response();
+        Response response = organizationCreation(organizationDisplayName, null, null, null, 200);
 
         JsonPath json = response.jsonPath();
         assertThat(json.getString("displayName")).isEqualTo(organizationDisplayName);
+
+        System.out.println(response.getBody().asString());
 
         organizationId = json.get("id");
         deleteOrganization(organizationId);
@@ -55,28 +66,14 @@ public class OrganizationTest extends BaseTest {
 
     @Test
     public void createOrganizationWithNoDisplayName() {
-       given()
-                .spec(reqSpec)
-                .when()
-                .post(ORGANIZATIONS)
-                .then()
-                .statusCode(HttpStatus.SC_BAD_REQUEST);
+        organizationCreation(null, null, null, null, 400);
     }
 
     @Test
     public void createNewOrganizationWithDesc() {
         organizationDesc = faker.lorem().paragraph();
 
-        Response response = given()
-                .spec(reqSpec)
-                .queryParam("displayName", organizationDisplayName)
-                .queryParam("desc", organizationDesc)
-                .when()
-                .post(ORGANIZATIONS)
-                .then()
-                .statusCode(HttpStatus.SC_OK)
-                .extract()
-                .response();
+        Response response = organizationCreation(organizationDisplayName, null, organizationDesc, null, 200);
 
         JsonPath json = response.jsonPath();
         assertThat(json.getString("displayName")).isEqualTo(organizationDisplayName);
@@ -90,16 +87,7 @@ public class OrganizationTest extends BaseTest {
     public void createNewOrganizationWithValidName() {
         organizationName = faker.company().name().toLowerCase().replaceAll(" ", "").replaceAll("-", "").replaceAll(",","");
 
-        Response response = given()
-                .spec(reqSpec)
-                .queryParam("displayName", organizationDisplayName)
-                .queryParam("name", organizationName)
-                .when()
-                .post(ORGANIZATIONS)
-                .then()
-                .statusCode(HttpStatus.SC_OK)
-                .extract()
-                .response();
+        Response response = organizationCreation(organizationDisplayName, organizationName, null, null, 200);
 
         JsonPath json = response.jsonPath();
         assertThat(json.getString("displayName")).isEqualTo(organizationDisplayName);
@@ -111,16 +99,7 @@ public class OrganizationTest extends BaseTest {
 
     @Test
     public void createNewOrganizationWithEmptyName() {
-        Response response = given()
-                .spec(reqSpec)
-                .queryParam("displayName", organizationDisplayName)
-                .queryParam("name", "")
-                .when()
-                .post(ORGANIZATIONS)
-                .then()
-                .statusCode(HttpStatus.SC_OK)
-                .extract()
-                .response();
+        Response response = organizationCreation(organizationDisplayName, "", null, null, 200);
 
         JsonPath json = response.jsonPath();
         assertThat(json.getString("displayName")).isEqualTo(organizationDisplayName);
@@ -135,16 +114,7 @@ public class OrganizationTest extends BaseTest {
     public void createNewOrganizationWithUniqueName() {
         organizationName = faker.company().name().toLowerCase().replaceAll(" ", "").replaceAll("-", "").replaceAll(",","");
 
-        Response response = given()
-                .spec(reqSpec)
-                .queryParam("displayName", organizationDisplayName)
-                .queryParam("name", organizationName)
-                .when()
-                .post(ORGANIZATIONS)
-                .then()
-                .statusCode(HttpStatus.SC_OK)
-                .extract()
-                .response();
+        Response response = organizationCreation(organizationDisplayName, organizationName, null, null, 200);
 
         JsonPath json = response.jsonPath();
         assertThat(json.getString("displayName")).isEqualTo(organizationDisplayName);
@@ -152,16 +122,7 @@ public class OrganizationTest extends BaseTest {
 
         organizationId = json.get("id");
 
-        response = given()
-                .spec(reqSpec)
-                .queryParam("displayName", organizationDisplayName)
-                .queryParam("name", organizationName)
-                .when()
-                .post(ORGANIZATIONS)
-                .then()
-                .statusCode(HttpStatus.SC_OK)
-                .extract()
-                .response();
+        response = organizationCreation(organizationDisplayName, organizationName, null, null, 200);
 
         json = response.jsonPath();
         assertThat(json.getString("displayName")).isEqualTo(organizationDisplayName);
@@ -177,16 +138,7 @@ public class OrganizationTest extends BaseTest {
     public void createNewOrganizationWithWebsite() {
         organizationWebsite = "http://" + faker.company().url();
 
-        Response response = given()
-                .spec(reqSpec)
-                .queryParam("displayName", organizationDisplayName)
-                .queryParam("website", organizationWebsite)
-                .when()
-                .post(ORGANIZATIONS)
-                .then()
-                .statusCode(HttpStatus.SC_OK)
-                .extract()
-                .response();
+        Response response = organizationCreation(organizationDisplayName, null, null, organizationWebsite, 200);
 
         JsonPath json = response.jsonPath();
         assertThat(json.getString("displayName")).isEqualTo(organizationDisplayName);
@@ -200,16 +152,7 @@ public class OrganizationTest extends BaseTest {
     public void createNewOrganizationWithHttpsWebsite() {
         organizationWebsite = "https://" + faker.company().url();
 
-        Response response = given()
-                .spec(reqSpec)
-                .queryParam("displayName", organizationDisplayName)
-                .queryParam("website", organizationWebsite)
-                .when()
-                .post(ORGANIZATIONS)
-                .then()
-                .statusCode(HttpStatus.SC_OK)
-                .extract()
-                .response();
+        Response response = organizationCreation(organizationDisplayName, null, null, organizationWebsite, 200);
 
         JsonPath json = response.jsonPath();
         assertThat(json.getString("displayName")).isEqualTo(organizationDisplayName);
@@ -223,16 +166,7 @@ public class OrganizationTest extends BaseTest {
     public void createNewOrganizationWithNoProtocolWebsite() {
         organizationWebsite = faker.company().url();
 
-        Response response = given()
-                .spec(reqSpec)
-                .queryParam("displayName", organizationDisplayName)
-                .queryParam("website", organizationWebsite)
-                .when()
-                .post(ORGANIZATIONS)
-                .then()
-                .statusCode(HttpStatus.SC_OK)
-                .extract()
-                .response();
+        Response response = organizationCreation(organizationDisplayName, null, null, organizationWebsite, 200);
 
         JsonPath json = response.jsonPath();
         assertThat(json.getString("displayName")).isEqualTo(organizationDisplayName);
